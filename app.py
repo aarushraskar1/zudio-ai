@@ -34,22 +34,22 @@ if "racks" not in st.session_state:
 if "queue_mins" not in st.session_state:
     st.session_state.queue_mins = 4
 if "alerts" not in st.session_state:
-    st.session_state.alerts = []
+    st.session_state.alerts = list()
 
 def dispatch_ai_alert(zone: str, issue: str, action: str):
     timestamp = datetime.now().strftime("%H:%M:%S")
     st.session_state.alerts.insert(0, f"[{timestamp}] 🚨 {zone} | {issue} → DISPATCHED: {action}")
 
-col_title, col_store = st.columns([2, 1])
+col_title, col_store = st.columns((3, 1))
 with col_title:
     st.markdown("## ◼️ ZUDIO AI — Store Floor & Queue Intelligence")
     st.caption("Powered by Hominis AI | Zero-Hardware Layer over Existing CCTV & POS")
 with col_store:
-    store = st.selectbox("Active Pilot Store", [
+    store = st.selectbox("Active Pilot Store", (
         "MH-PUN-09 | Wakad High Street, Pune",
         "MH-PUN-04 | Phoenix Marketcity, Pune",
         "MH-MUM-02 | Linking Road, Mumbai"
-    ])
+    ))
 
 st.divider()
 
@@ -60,7 +60,7 @@ k2.metric("Avg Billing Queue Wait", f"{st.session_state.queue_mins} mins", "⚠�
 k3.metric("Active Staff Dispatches", str(len(st.session_state.alerts)), "Auto-routed to Handhelds")
 k4.metric("Est. Weekend Revenue Saved", "₹1,42,500", "+9.4% conversion")
 
-tab1, tab2, tab3 = st.tabs(["⚡ 1-Click Weekend Rush Simulator", "📷 Live CCTV Vision Analyzer (Real AI)", "🧠 Store Manager AI Copilot"])
+tab1, tab2, tab3 = st.tabs(("⚡ 1-Click Weekend Rush Simulator", "📷 Live CCTV Vision Analyzer (Real AI)", "🧠 Store Manager AI Copilot"))
 
 with tab1:
     st.subheader("Simulate Saturday 7:00 PM Peak Footfall")
@@ -86,10 +86,10 @@ with tab1:
     if b3.button("🔄 Reset Store Floor", use_container_width=True):
         st.session_state.racks["RACK C3 — Men's ₹799 Cargo Denim"]["fill"] = 68
         st.session_state.queue_mins = 4
-        st.session_state.alerts = []
+        st.session_state.alerts = list()
         st.rerun()
 
-    left, right = st.columns([1.2, 1])
+    left, right = st.columns((1.2, 1))
     with left:
         st.markdown("#### Live Rack Fill Levels (CCTV + POS Sync)")
         for rack_name, info in st.session_state.racks.items():
@@ -107,7 +107,7 @@ with tab1:
 with tab2:
     st.subheader("Test Real CCTV Frame Analysis")
     st.write("Upload any photo of a clothing rack, retail shelf, or checkout queue (or snap via webcam) to watch Zudio AI inspect it live.")
-    img_file = st.file_uploader("Upload Store Frame (JPG/PNG)", type=["jpg", "jpeg", "png"])
+    img_file = st.file_uploader("Upload Store Frame (JPG/PNG)", type=("jpg", "jpeg", "png"))
     cam_file = st.camera_input("Or capture live camera frame")
     active_img = img_file or cam_file
 
@@ -128,7 +128,7 @@ Analyze this retail store image and return a crisp operational report with:
 4. Exact 1-line handheld dispatch instruction for floor staff."""
                     response = client.models.generate_content(
                         model="gemini-2.5-flash",
-                        contents=
+                        contents=(prompt, image)
                     )
                     st.markdown("### AI Vision Output")
                     st.write(response.text)
